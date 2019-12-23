@@ -1,0 +1,13 @@
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/producer/ProducerService.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/producer/package-info.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/config/AppConfig.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/consumer/config/RetryConsumerConfig.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/consumer/RetryService.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/schema/EmployeeKey.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/schema/Employee.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/producer/ProducerController.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/consumer/ConsumerService.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/producer/config/ProducerConfig.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/ProducerConsumerApplication.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/consumer/package-info.java
+/Users/stefan-baychev/IdeaProjects/template-kafka-plug-and-play/src/main/java/co/tide/kafka/consumer/config/ConsumerConfig.java

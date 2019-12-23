@@ -1,0 +1,29 @@
+---
+service-name: @@service-name@@
+
+# One of: "worker" (old container is killed before starting new one), "service"
+# (default, new containers started before old ones are deleted)
+service-type: service
+
+# One of: "direct" (default), "internal" (on VPN only), "cloudflare" (pinned SSL certificate)
+access-mode: internal
+
+desired-count: 1
+
+primary-container: service
+
+containers:
+  service:
+    image: r.tide.co/@@service-name@@:$BUILD_TAG
+    environment:
+      SPRING_PROFILES_ACTIVE: ecs
+    healthcheck:
+      path:           /health
+      interval:       30
+      timeout:        2
+      retries:        5
+      start-period:   60 # How long should health checks wait to allow for startup time
+    memory: 1024
+    ports:
+      HTTP: 8080    # delete
+      HEALTH: 8081  # as 
