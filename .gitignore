@@ -1,0 +1,16 @@
+.gradle
+/build/
+/gradle/
+
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+/out/
+/target/
+
+
+# Config files of individual developers
+**/application-dev-*.properties

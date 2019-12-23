@@ -1,0 +1,10 @@
+# Exclude root directories
+build/
+gradle/
+sql/
+src/
+target/
+
+# Include JAR build output
+!build/libs/*
+

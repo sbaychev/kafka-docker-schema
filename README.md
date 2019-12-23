@@ -13,6 +13,9 @@ Currently we are expecting a topic named: event.e
 
 curl -d "message=Doctor" http://localhost:8080/publish/
 
+-----------------------------------------
+&#x290B;    ****DEFAULT****       &#x290B;
+-----------------------------------------
 # Requirements
 
 - Java 8 or above (see installation instructions below)
