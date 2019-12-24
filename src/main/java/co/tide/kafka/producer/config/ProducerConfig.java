@@ -47,10 +47,29 @@ public class ProducerConfig {
                 getPropertiesAcks());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG,
                 getPropertiesRetries());
+        //Only one in-flight messages per Kafka broker connection
+        // - max.in.flight.requests.per.connection (default 5)
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION,
+                1);
+        //Request timeout - request.timeout.ms
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG,
+                10000);
+        //Only retry after one second.
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.RETRY_BACKOFF_MS_CONFIG,
+                1500);
         props.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                 getPropertiesKeySerializer());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 getPropertiesValueSerializer());
+
+        /*                  To be Considered For Usage           */
+//        //Linger up to 100 ms before sending batch if size not met
+//        props.put(org.apache.kafka.clients.producer.ProducerConfig.LINGER_MS_CONFIG, 100);
+//        //Batch up to 64K buffer sizes.
+//        props.put(org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG,  16_384 * 4);
+//        //Use Snappy compression for batch compression.
+//        End to end compression is possible if the Kafka Broker config “compression.type” set to “producer”.
+//        props.put(org.apache.kafka.clients.producer.ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
 
         return props;
     }

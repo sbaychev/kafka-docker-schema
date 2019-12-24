@@ -2,6 +2,7 @@ package co.tide.kafka.producer;
 
 import co.tide.kafka.schema.Employee;
 import co.tide.kafka.schema.EmployeeKey;
+import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,7 @@ public class ProducerService {
         // creating Employee
 
         Employee employee = new Employee();
-//        new SecureRandom().nextInt()
-//        AtomicInt
+
         employee.setId(1);
         employee.setFirstName("firstName");
         employee.setLastName("lastName");
@@ -52,20 +52,24 @@ public class ProducerService {
 
         LOG.info("sending employee='{}' to topic='{}'", employee, this.topicName);
 //        ProducerRecord headers within it
-        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName, employeeKey, employee);
 
-        future.addCallback(new ListenableFutureCallback<SendResult<Object, Object>>() {
+        IntStream.range(0, 10)
+                .forEach(i -> kafkaTemplate.send(this.topicName, employeeKey, employee));
 
-            @Override
-            public void onSuccess(final SendResult<Object, Object> message) {
-                LOG.info("sent message={}  with offset={}", message, message.getRecordMetadata().offset());
-            }
-
-            //            Consider DLQ Implementation
-            @Override
-            public void onFailure(final Throwable throwable) {
-                LOG.error("unable to send message={} due to={}", message, throwable.getCause());
-            }
-        });
+//        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName, employeeKey, employee);
+//
+//        future.addCallback(new ListenableFutureCallback<SendResult<Object, Object>>() {
+//
+//            @Override
+//            public void onSuccess(final SendResult<Object, Object> message) {
+//                LOG.info("sent message={}  with offset={}", message, message.getRecordMetadata().offset());
+//            }
+//
+//            //            Consider DLQ Implementation
+//            @Override
+//            public void onFailure(final Throwable throwable) {
+//                LOG.error("unable to send message={} due to={}", message, throwable.getCause());
+//            }
+//        });
     }
 }
