@@ -1,5 +1,6 @@
 package co.tide.kafka.producer;
 
+import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class ProducerController {
     public void sendMessageToKafkaTopic(@RequestParam("message") String message) {
 
         LOG.info("incoming message='{}' ", message);
+
+//        IntStream.range(0, 10)
+//                .forEach(i -> producerService.send(message));
 
         producerService.send(message);
     }

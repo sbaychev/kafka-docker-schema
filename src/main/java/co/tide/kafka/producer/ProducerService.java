@@ -32,6 +32,8 @@ public class ProducerService {
         this.topicName = topicName;
     }
 
+    //    the producer picks partition implicitly or explicitly
+//    | we can define via the key or via the partition kafka template send | else Round Robin
     @Async
     public void send(final String message) {
 
@@ -50,26 +52,25 @@ public class ProducerService {
         employeeKey.setId(1);
         employeeKey.setDepartmentName("IT");
 
-        LOG.info("sending employee='{}' to topic='{}'", employee, this.topicName);
+        if (LOG.isDebugEnabled()) {
+            LOG.info("sending employee='{}' to topic='{}'", employee, this.topicName);
+        }
 //        ProducerRecord headers within it
 
-        IntStream.range(0, 10)
-                .forEach(i -> kafkaTemplate.send(this.topicName, employeeKey, employee));
+        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName, employeeKey, employee);
 
-//        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName, employeeKey, employee);
-//
-//        future.addCallback(new ListenableFutureCallback<SendResult<Object, Object>>() {
-//
-//            @Override
-//            public void onSuccess(final SendResult<Object, Object> message) {
-//                LOG.info("sent message={}  with offset={}", message, message.getRecordMetadata().offset());
-//            }
-//
-//            //            Consider DLQ Implementation
-//            @Override
-//            public void onFailure(final Throwable throwable) {
-//                LOG.error("unable to send message={} due to={}", message, throwable.getCause());
-//            }
-//        });
+        future.addCallback(new ListenableFutureCallback<SendResult<Object, Object>>() {
+
+            @Override
+            public void onSuccess(final SendResult<Object, Object> message) {
+                LOG.info("sent message={}  with offset={}", message, message.getRecordMetadata().offset());
+            }
+
+            //            Consider DLQ Implementation
+            @Override
+            public void onFailure(final Throwable throwable) {
+                LOG.error("unable to send message={} due to={}", message, throwable.getCause());
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-
+# up to 4 clients and 1 broker since sinle node cluster
 docker run --net=host --rm confluentinc/cp-kafka:latest kafka-topics --create --topic event.t --partitions 4 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
 docker run --net=host --rm confluentinc/cp-kafka:latest kafka-topics --describe --topic event.t --zookeeper localhost:32181

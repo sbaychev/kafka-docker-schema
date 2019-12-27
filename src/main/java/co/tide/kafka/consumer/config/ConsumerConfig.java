@@ -105,6 +105,8 @@ public class ConsumerConfig {
 
 //        set auto or manual ack in consumer or here or above in properties
 //        factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
+//          in case we want batch message consumption
+//        factory.setBatchListener(true);  // <<<<<<<<<<<<<<<<<<<<<<<<<
 
 //        factory.getContainerProperties()
 //                .setConsumerTaskExecutor(asyncListenableTaskExecutorForConsumer());
@@ -117,17 +119,24 @@ public class ConsumerConfig {
         return factory;
     }
 
-    @Bean
-    public AsyncListenableTaskExecutor asyncListenableTaskExecutorForConsumer() {
-
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(getListenerConcurrency());
-
-        return threadPoolTaskExecutor;
-    }
+    /*              Optional Setup       **/
+//    @Bean
+//    public AsyncListenableTaskExecutor asyncListenableTaskExecutorForConsumer() {
+//
+//        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+//        threadPoolTaskExecutor.setCorePoolSize(getListenerConcurrency());
+//
+//        return threadPoolTaskExecutor;
+//    }
 
     /*  Programmatic Way for topic Creation */
 
+//    @Bean
+//    public KafkaAdmin admin() {
+//        Map<String, Object> configs = new HashMap<>();
+//        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,   getBootStrapKafkaServers());
+//        return new KafkaAdmin(configs);
+//    }
 //    @Bean
 //    NewTopic newTopic() {
 //        return new NewTopic(topicName, partitions, replicationFactor);

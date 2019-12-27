@@ -43,31 +43,38 @@ public class ProducerConfig {
                 getBootStrapKafkaServers());
         props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
                 getSchemaRegistryUrl());
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                getPropertiesKeySerializer());
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                getPropertiesValueSerializer());
+//        "Note that enabling idempotence requires <code>" + MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION + "</code> to be less than or equal to 5, "
+//                + "<code>" + RETRIES_CONFIG + "</code> to be greater than 0 and <code>" + ACKS_CONFIG + "</code> must be 'all'. If these values "
+//                + "are not explicitly set by the user, suitable values will be chosen. If incompatible values are set, "
+//                + "a <code>ConfigException</code> will be thrown.";
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG,
+                true);
         props.put(org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG,
                 getPropertiesAcks());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG,
                 getPropertiesRetries());
-        //Only one in-flight messages per Kafka broker connection
+        //Only retry after one and a half second.
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.RETRY_BACKOFF_MS_CONFIG,
+                1_500);
+        //Only one in-flight messages per Kafka broker connection (or two for per improvement)
         // - max.in.flight.requests.per.connection (default 5)
         props.put(org.apache.kafka.clients.producer.ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION,
                 1);
         //Request timeout - request.timeout.ms
         props.put(org.apache.kafka.clients.producer.ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG,
-                10000);
-        //Only retry after one second.
-        props.put(org.apache.kafka.clients.producer.ProducerConfig.RETRY_BACKOFF_MS_CONFIG,
-                1500);
-        props.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                getPropertiesKeySerializer());
-        props.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                getPropertiesValueSerializer());
+                10_000);
+
 
         /*                  To be Considered For Usage           */
 //        //Linger up to 100 ms before sending batch if size not met
 //        props.put(org.apache.kafka.clients.producer.ProducerConfig.LINGER_MS_CONFIG, 100);
 //        //Batch up to 64K buffer sizes.
 //        props.put(org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG,  16_384 * 4);
-//        //Use Snappy compression for batch compression.
+//        //Use Snappy compression for batch compression
 //        End to end compression is possible if the Kafka Broker config “compression.type” set to “producer”.
 //        props.put(org.apache.kafka.clients.producer.ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
 
