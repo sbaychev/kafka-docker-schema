@@ -4,8 +4,10 @@ import co.tide.kafka.config.AppConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+import org.springframework.kafka.annotation.EnableKafka;
 
 @Import(AppConfig.class)
+@EnableKafka
 @SpringBootApplication
 public class ProducerConsumerApplication {
 
