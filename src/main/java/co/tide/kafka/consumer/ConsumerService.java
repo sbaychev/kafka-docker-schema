@@ -17,6 +17,11 @@ import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+/**
+ * Sample Service with 4 partition consumers (we have set the to be consumed topic to have 4 partitions) that do the
+ * same work in essence, but in parallel
+ */
+
 @Service
 public class ConsumerService implements ConsumerSeekAware {
 
@@ -37,7 +42,7 @@ public class ConsumerService implements ConsumerSeekAware {
             id = "0",
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory",
-            topicPartitions = { @TopicPartition(topic = "${spring.kafka.topic-name}", partitions = { "0" }) }
+            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"0"})}
     )
     public void listenAsEmployee(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
@@ -69,8 +74,9 @@ public class ConsumerService implements ConsumerSeekAware {
         //consider manual ack
 
     }
+
     @KafkaListener(
-            topicPartitions = { @TopicPartition(topic = "${spring.kafka.topic-name}", partitions = { "1" }) },
+            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"1"})},
             clientIdPrefix = "tide.co-avro-1",
             id = "1",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -105,8 +111,9 @@ public class ConsumerService implements ConsumerSeekAware {
         //consider manual ack
 
     }
+
     @KafkaListener(
-            topicPartitions = { @TopicPartition(topic = "${spring.kafka.topic-name}", partitions = { "2" }) },
+            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"2"})},
             clientIdPrefix = "tide.co-avro-2",
             id = "2",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -141,8 +148,9 @@ public class ConsumerService implements ConsumerSeekAware {
         //consider manual ack
 
     }
+
     @KafkaListener(
-            topicPartitions = { @TopicPartition(topic = "${spring.kafka.topic-name}", partitions = { "3" }) },
+            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"3"})},
             clientIdPrefix = "tide.co-avro-3",
             id = "3",
             groupId = "${spring.kafka.consumer.group-id}",

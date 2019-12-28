@@ -26,8 +26,8 @@ public class ProducerController {
 
         LOG.info("incoming message='{}' ", message);
 
-        IntStream.range(0, 50)
-                .forEach(i -> producerService.send(message + counter.getAndIncrement()));
+            IntStream.range(0, 10)
+                    .forEach(i -> producerService.send(message + counter.getAndIncrement()));
 
 //        producerService.send(message);
     }

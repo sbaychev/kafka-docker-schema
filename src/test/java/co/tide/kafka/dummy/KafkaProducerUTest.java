@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.ProducerRecordTest;
 import org.assertj.core.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.opentest4j.AssertionFailedError;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
 public class KafkaProducerUTest extends AKafkaBaseTest {
@@ -30,24 +32,28 @@ public class KafkaProducerUTest extends AKafkaBaseTest {
     @org.junit.Test
     public void should_send() throws IOException {
 
-        ArgumentCaptor<ProducerRecord> captor = ArgumentCaptor.forClass(ProducerRecord.class);
+        ArgumentCaptor<ProducerRecordTest> captor = ArgumentCaptor.forClass(ProducerRecordTest.class);
+        mockProducerService.send("1");
 
-//        verify(mockKafkaProducer).send(captor.capture());
+        ProducerRecordTest actualRecord = captor.getValue();
+
+
+//        verify(mockProducerService).send(captor.capture());
 //        assertThat(actualRecord.topic()).isEqualTo("mock topic");
-//        assertThat(actualRecord.key()).isEqualTo("...");
+//        assertThat(actualRecord.key()).isEqualTo(0);
 
 
         //Convert avro message from avro schema message to POJO
-        Employee employee = mapRecordToObject(createEmployeeAvroPayload(), new Employee());
-
-        this.mockProducerService.send(MESSAGE);
-
-        kafkaTemplate.send(getTopicName(), employee);
-
-        ConsumerRecord<EmployeeKey, Employee> singleRecord = KafkaTestUtils
-                .getSingleRecord(employeeKeyEmployeeConsumer, getTopicName(), 1500);
-
-        Assertions.assertThat(singleRecord).isNotNull();
+//        Employee employee = mapRecordToObject(createEmployeeAvroPayload(), new Employee());
+//
+//        this.mockProducerService.send(MESSAGE);
+//
+//        kafkaTemplate.send(getTopicName(), employee);
+//
+//        ConsumerRecord<EmployeeKey, Employee> singleRecord = KafkaTestUtils
+//                .getSingleRecord(employeeKeyEmployeeConsumer, getTopicName(), 1500);
+//
+//        Assertions.assertThat(singleRecord).isNotNull();
     }
 
     @org.junit.Test(expected = AssertionFailedError.class)

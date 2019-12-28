@@ -21,6 +21,7 @@ import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.reflect.ReflectDatumWriter;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.assertj.core.util.Lists;
 import org.junit.After;
@@ -86,13 +87,18 @@ public abstract class AKafkaBaseTest {
     @Before
     public void setUp() {
 
-        Map<String, Object> configs = new HashMap<>(
+        Map<String, Object> consumerProperties = new HashMap<>(
                 KafkaTestUtils.consumerProps(getGroupId(), "false", embeddedKafkaBroker));
-        configs.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+
+        Map<String, Object> producerProperties = kafkaProperties.buildProducerProperties();
+
+        employeeKeyEmployeeProducer = new KafkaProducer<EmployeeKey, Employee>(producerProperties);
+
+        consumerProperties.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
                 getSchemaURL());
-        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 io.confluent.kafka.serializers.KafkaAvroDeserializer.class);
-        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                 io.confluent.kafka.serializers.KafkaAvroDeserializer.class);
 
 //        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
@@ -104,7 +110,7 @@ public abstract class AKafkaBaseTest {
 //        configs.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
 //                getPropertiesAutoCommitIntervalMs());
 
-        employeeKeyEmployeeConsumer = new DefaultKafkaConsumerFactory<EmployeeKey, Employee>(configs)
+        employeeKeyEmployeeConsumer = new DefaultKafkaConsumerFactory<EmployeeKey, Employee>(consumerProperties)
                 .createConsumer(getGroupId(), getClientId());
 
         kafkaProperties.buildConsumerProperties();
