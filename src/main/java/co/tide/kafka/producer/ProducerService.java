@@ -2,6 +2,8 @@ package co.tide.kafka.producer;
 
 import co.tide.kafka.schema.Employee;
 import co.tide.kafka.schema.EmployeeKey;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,8 @@ public class ProducerService {
 
     private final String topicName;
 
+    private AtomicInteger atomicInteger = new AtomicInteger();
+
     @Autowired
     public ProducerService(
             final KafkaTemplate<Object, Object> kafkaTemplate,
@@ -32,7 +36,7 @@ public class ProducerService {
         this.topicName = topicName;
     }
 
-    //    the producer picks partition implicitly or explicitly
+//    the producer picks partition implicitly or explicitly
 //    | we can define via the key or via the partition kafka template send | else Round Robin
     @Async
     public void send(final String message) {
@@ -41,7 +45,7 @@ public class ProducerService {
 
         Employee employee = new Employee();
 
-        employee.setId(1);
+        employee.setId(atomicInteger.intValue());
         employee.setFirstName("firstName");
         employee.setLastName("lastName");
         employee.setDepartment("IT");
@@ -49,15 +53,17 @@ public class ProducerService {
 
         // creating partition key for kafka topic
         EmployeeKey employeeKey = new EmployeeKey();
-        employeeKey.setId(1);
+        employeeKey.setId(atomicInteger.getAndIncrement());
         employeeKey.setDepartmentName("IT");
 
         if (LOG.isDebugEnabled()) {
             LOG.info("sending employee='{}' to topic='{}'", employee, this.topicName);
         }
-//        ProducerRecord headers within it
 
-        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName, employeeKey, employee);
+//        ProducerRecord headers within it
+        ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName,
+//                new Random().nextInt(4),
+                employeeKey, employee);
 
         future.addCallback(new ListenableFutureCallback<SendResult<Object, Object>>() {
 

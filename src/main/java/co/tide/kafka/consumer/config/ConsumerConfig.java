@@ -93,7 +93,6 @@ public class ConsumerConfig {
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Object, Object>> kafkaListenerContainerFactory() {
 
         ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-
         factory.setConsumerFactory(consumerFactory());
 
 //        If the concurrency is greater than the number of partitions per topic,
@@ -106,7 +105,7 @@ public class ConsumerConfig {
 //        set auto or manual ack in consumer or here or above in properties
 //        factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
 //          in case we want batch message consumption
-//        factory.setBatchListener(true);  // <<<<<<<<<<<<<<<<<<<<<<<<<
+//        factory.setBatchListener(true);
 
 //        factory.getContainerProperties()
 //                .setConsumerTaskExecutor(asyncListenableTaskExecutorForConsumer());
@@ -131,12 +130,6 @@ public class ConsumerConfig {
 
     /*  Programmatic Way for topic Creation */
 
-//    @Bean
-//    public KafkaAdmin admin() {
-//        Map<String, Object> configs = new HashMap<>();
-//        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,   getBootStrapKafkaServers());
-//        return new KafkaAdmin(configs);
-//    }
 //    @Bean
 //    NewTopic newTopic() {
 //        return new NewTopic(topicName, partitions, replicationFactor);
