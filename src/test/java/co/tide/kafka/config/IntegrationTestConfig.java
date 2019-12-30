@@ -9,6 +9,4 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:application-test.properties")
 public class IntegrationTestConfig {
 
-//    @MockBean
-//    private Supplier dummyBean; // TODO: remove me
 }

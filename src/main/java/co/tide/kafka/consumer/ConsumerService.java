@@ -30,6 +30,7 @@ public class ConsumerService implements ConsumerSeekAware {
     private Map<String, LinkedBlockingQueue<Employee>> employeeMapEvents = new ConcurrentHashMap<>();
 
 //    We can have multiple listeners per given partition thus utilizing the kafkaListenerContainerFactory proper
+//    If utilizing the same Spring Container they need to be wrapped as seperate @Component | Service managed Beans
 //    Only one consumer in a consumer group (groupId) can consume from a partition at a time - that is the way Kafka works.
 //    Consumer can read from more than one partition, but as said above a partition can only be used by one consumer in a
 //    consumer group at a time. If you only have one partition, then you can only have one consumer
