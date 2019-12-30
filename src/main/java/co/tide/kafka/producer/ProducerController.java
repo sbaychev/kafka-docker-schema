@@ -24,9 +24,9 @@ public class ProducerController {
     @PostMapping(value = "/publish")
     public void sendMessageToKafkaTopic(@RequestParam("message") String message) {
 
-        LOG.info("incoming message='{}' ", message);
+//        LOG.info("incoming message='{}' ", message);
 
-            IntStream.range(0, 10)
+            IntStream.range(0, 50)
                     .forEach(i -> producerService.send(message + counter.getAndIncrement()));
 
 //        producerService.send(message);

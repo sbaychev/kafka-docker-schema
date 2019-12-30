@@ -2,9 +2,14 @@ package co.tide.kafka.producer;
 
 import co.tide.kafka.schema.Employee;
 import co.tide.kafka.schema.EmployeeKey;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeader;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +30,7 @@ public class ProducerService {
 
     private final String topicName;
 
-    private AtomicInteger atomicInteger = new AtomicInteger();
+    private final AtomicInteger atomicInteger = new AtomicInteger();
 
     @Autowired
     public ProducerService(
@@ -36,7 +41,7 @@ public class ProducerService {
         this.topicName = topicName;
     }
 
-//    the producer picks partition implicitly or explicitly
+    //    the producer picks partition implicitly or explicitly
 //    | we can define via the key or via the partition kafka template send | else Round Robin
     @Async
     public void send(final String message) {
@@ -45,6 +50,7 @@ public class ProducerService {
 
         Employee employee = new Employee();
 
+//      !NB! not the production way for ID generation ans usage for async service
         employee.setId(atomicInteger.intValue());
         employee.setFirstName("firstName");
         employee.setLastName("lastName");
@@ -60,7 +66,13 @@ public class ProducerService {
             LOG.info("sending employee='{}' to topic='{}'", employee, this.topicName);
         }
 
-//        ProducerRecord headers within it
+//        ProducerRecord headers within it | We need to Specify the Partition beforehand if we are to use headers
+//    public ProducerRecord(String topic, Integer partition, K key, V value, Iterable<Header> headers) {
+//        Header header = new RecordHeader("id", "123".getBytes());
+//        Collection headers = Collections.singletonList(header);
+//        ProducerRecord<EmployeeKey, Employee> producerRecord = new ProducerRecord(this.topicName,
+//                employeeKey, employee, headers);
+
         ListenableFuture<SendResult<Object, Object>> future = kafkaTemplate.send(this.topicName,
 //                new Random().nextInt(4),
                 employeeKey, employee);
@@ -72,7 +84,7 @@ public class ProducerService {
                 LOG.info("sent message={}  with offset={}", message, message.getRecordMetadata().offset());
             }
 
-            //            Consider DLQ Implementation
+            //            Consider DLQ | ErrorQ Implementation
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("unable to send message={} due to={}", message, throwable.getCause());

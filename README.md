@@ -12,7 +12,7 @@ The Kafka Listener is provided a given topic or topic partitions.
 Currently we are expecting a topic named: event.e 
 
 # Sample Rest API Usage
-curl -d "message=Doctor" http://localhost:8080/publish/
+curl -d "message=Doctor" http://localhost:8077/publish/
 
 # Requirements
 

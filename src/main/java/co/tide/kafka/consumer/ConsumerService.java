@@ -38,11 +38,12 @@ public class ConsumerService implements ConsumerSeekAware {
 //    topicPartitions = { @TopicPartition(topic = "${spring.kafka.topic-name}", partitions = { "0" }) })
 
     @KafkaListener(
+            //            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"0"})}
+            topics = "${spring.kafka.topic-name}",
             clientIdPrefix = "tide.co-avro-0",
             id = "0",
             groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory",
-            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"0"})}
+            containerFactory = "kafkaListenerContainerFactory"
     )
     public void listenAsEmployee(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
@@ -62,6 +63,31 @@ public class ConsumerService implements ConsumerSeekAware {
 //            queue.add(payload);
 //        }
 
+//        LOG.info("Logger 0 [] I received message on thread: " + Thread.currentThread().getName() +
+//                " hashcode: " + Thread.currentThread().hashCode());
+
+        LOG.info("Logger 0 [] received key {}: Type [{}] | Payload: {} | Record: {}",
+                employeeConsumerRecord.key(),
+                typeIdHeader(employeeConsumerRecord.headers()),
+                payload,
+                employeeConsumerRecord);
+
+        //consider manual ack
+
+    }
+
+    @KafkaListener(
+            topics = "${spring.kafka.topic-name}",
+//            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"1"})},
+            clientIdPrefix = "tide.co-avro-1",
+            id = "1",
+            groupId = "${spring.kafka.consumer.group-id}",
+            containerFactory = "kafkaListenerContainerFactory")
+    public void listenAsEmployee1(
+            ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
+            //(required = false) if using compacted topics ergo tombstone record
+            @Payload(required = false) Employee payload) {
+
 //        LOG.info("I received message on thread: " + Thread.currentThread().getName() +
 //                " hashcode: " + Thread.currentThread().hashCode());
 
@@ -76,28 +102,16 @@ public class ConsumerService implements ConsumerSeekAware {
     }
 
     @KafkaListener(
-            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"1"})},
-            clientIdPrefix = "tide.co-avro-1",
-            id = "1",
+            topics = "${spring.kafka.topic-name}",
+//            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"2"})},
+            clientIdPrefix = "tide.co-avro-2",
+            id = "2",
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsEmployee1(
+    public void listenAsEmployee2(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
             //(required = false) if using compacted topics ergo tombstone record
             @Payload(required = false) Employee payload) {
-
-//        LinkedBlockingQueue<Employee> queue = employeeMapEvents.get(payload.getDepartment());
-//        if (queue == null && payload != null) {
-//            queue = new LinkedBlockingQueue<>();
-//            queue.add(payload);
-//            employeeMapEvents.put(payload.getDepartment().toString(), queue);
-//        } else if(payload == null) {
-//        LOG.info("received employee with id to be deleted {}",  employeeConsumerRecord.key());
-//        }
-//        else {
-//             LOG.info("received employee update {}", payload);
-//            queue.add(payload);
-//        }
 
 //        LOG.info("I received message on thread: " + Thread.currentThread().getName() +
 //                " hashcode: " + Thread.currentThread().hashCode());
@@ -113,44 +127,8 @@ public class ConsumerService implements ConsumerSeekAware {
     }
 
     @KafkaListener(
-            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"2"})},
-            clientIdPrefix = "tide.co-avro-2",
-            id = "2",
-            groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsEmployee2(
-            ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
-            //(required = false) if using compacted topics ergo tombstone record
-            @Payload(required = false) Employee payload) {
-
-//        LinkedBlockingQueue<Employee> queue = employeeMapEvents.get(payload.getDepartment());
-//        if (queue == null && payload != null) {
-//            queue = new LinkedBlockingQueue<>();
-//            queue.add(payload);
-//            employeeMapEvents.put(payload.getDepartment().toString(), queue);
-//        } else if(payload == null) {
-//        LOG.info("received employee with id to be deleted {}",  employeeConsumerRecord.key());
-//        }
-//        else {
-//             LOG.info("received employee update {}", payload);
-//            queue.add(payload);
-//        }
-
-//        LOG.info("I received message on thread: " + Thread.currentThread().getName() +
-//                " hashcode: " + Thread.currentThread().hashCode());
-
-        LOG.info("Logger 3 [] received key {}: Type [{}] | Payload: {} | Record: {}",
-                employeeConsumerRecord.key(),
-                typeIdHeader(employeeConsumerRecord.headers()),
-                payload,
-                employeeConsumerRecord);
-
-        //consider manual ack
-
-    }
-
-    @KafkaListener(
-            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"3"})},
+            topics = "${spring.kafka.topic-name}",
+//            topicPartitions = {@TopicPartition(topic = "${spring.kafka.topic-name}", partitions = {"3"})},
             clientIdPrefix = "tide.co-avro-3",
             id = "3",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -160,23 +138,10 @@ public class ConsumerService implements ConsumerSeekAware {
             //(required = false) if using compacted topics ergo tombstone record
             @Payload(required = false) Employee payload) {
 
-//        LinkedBlockingQueue<Employee> queue = employeeMapEvents.get(payload.getDepartment());
-//        if (queue == null && payload != null) {
-//            queue = new LinkedBlockingQueue<>();
-//            queue.add(payload);
-//            employeeMapEvents.put(payload.getDepartment().toString(), queue);
-//        } else if(payload == null) {
-//        LOG.info("received employee with id to be deleted {}",  employeeConsumerRecord.key());
-//        }
-//        else {
-//             LOG.info("received employee update {}", payload);
-//            queue.add(payload);
-//        }
-
 //        LOG.info("I received message on thread: " + Thread.currentThread().getName() +
 //                " hashcode: " + Thread.currentThread().hashCode());
 
-        LOG.info("Logger 4 [] received key {}: Type [{}] | Payload: {} | Record: {}",
+        LOG.info("Logger 3 [] received key {}: Type [{}] | Payload: {} | Record: {}",
                 employeeConsumerRecord.key(),
                 typeIdHeader(employeeConsumerRecord.headers()),
                 payload,
