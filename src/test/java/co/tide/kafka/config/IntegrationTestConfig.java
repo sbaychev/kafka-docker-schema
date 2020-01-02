@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
 @TestConfiguration
-@Import({MockSerdeConfig.class})
 @PropertySource("classpath:application-test.properties")
 public class IntegrationTestConfig {
 

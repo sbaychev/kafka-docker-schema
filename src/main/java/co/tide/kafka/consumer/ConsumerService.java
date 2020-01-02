@@ -12,6 +12,7 @@ import org.apache.kafka.common.header.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.KafkaListeners;
 import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.messaging.handler.annotation.Payload;

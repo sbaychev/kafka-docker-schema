@@ -1,18 +1,18 @@
 package co.tide.kafka;
 
 import co.tide.kafka.config.IntegrationTestConfig;
-import co.tide.kafka.config.MockSerdeConfig;
-import co.tide.kafka.schema.Employee;
+import co.tide.kafka.mock.CustomKafkaAvroKeyDeserializer;
+import co.tide.kafka.mock.CustomKafkaAvroSerializer;
+import co.tide.kafka.mock.CustomKafkaAvroValueDeserializer;
 import co.tide.kafka.schema.EmployeeKey;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -23,6 +23,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.test.IntegrationTest;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +42,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -49,25 +50,31 @@ import org.springframework.util.Assert;
 @Getter
 @Setter
 @DirtiesContext
-@Category(IntegrationTestConfig.class)
 @ActiveProfiles("test")
+@SpringBootTest(classes = {
+        ProducerConsumerApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@Import({IntegrationTestConfig.class, MockSerdeConfig.class})
+@Category(IntegrationTest.class)
+//@Import({IntegrationTestConfig.class})
 @EmbeddedKafka(topics = "${spring.kafka.topic-name}")
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "spring.kafka.consumer")
 public abstract class AKafkaBaseTest {
 
-    private String propertiesKeyDeserializer;
-    private String propertiesValueDeserializer;
     private String autoOffsetReset;
     private String groupId;
     private String clientId;
     private boolean propertiesSpecificAvroReader;
     private boolean propertiesEnableAutoCommit;
     private String propertiesAutoCommitIntervalMs;
-    private int propertiesPollTimeout;
+
+    private static String TOPIC = "event.t";
+
+    @Value("${spring.kafka.producer.properties-acks}")
+    private String producerPropertiesAcks;
+
+    @Value("${spring.kafka.messages-per-request}")
+    private int maxMessagesPerRequest;
 
     @Value("${spring.kafka.topic-name}")
     private String topicName;
@@ -76,46 +83,54 @@ public abstract class AKafkaBaseTest {
     private String schemaURL;
 
     @Autowired
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
+    private EmbeddedKafkaBroker embeddedKafka;
 
     @Autowired
     private KafkaProperties kafkaProperties;
 
-    protected Producer<EmployeeKey, Employee> employeeKeyEmployeeProducer;
-    protected Consumer<EmployeeKey, Employee> employeeKeyEmployeeConsumer;
+    protected Producer<Object, Object> employeeKeyEmployeeProducer;
+    protected Consumer<Object, Object> employeeKeyEmployeeConsumer;
 
     @Before
     public void setUp() {
 
-        Map<String, Object> consumerProperties = new HashMap<>(
-                KafkaTestUtils.consumerProps(getGroupId(), "false", embeddedKafkaBroker));
-
+        Map<String, Object> consumerProperties = kafkaProperties.buildConsumerProperties();
         Map<String, Object> producerProperties = kafkaProperties.buildProducerProperties();
 
-        employeeKeyEmployeeProducer = new KafkaProducer<EmployeeKey, Employee>(producerProperties);
-
+        consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                embeddedKafka.getBrokersAsString());
         consumerProperties.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
                 getSchemaURL());
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                io.confluent.kafka.serializers.KafkaAvroDeserializer.class);
+                CustomKafkaAvroKeyDeserializer.class);
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                io.confluent.kafka.serializers.KafkaAvroDeserializer.class);
+                CustomKafkaAvroValueDeserializer.class);
+        consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
+                getAutoOffsetReset());
+        consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
+                isPropertiesEnableAutoCommit());
+        consumerProperties.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG,
+                isPropertiesSpecificAvroReader());
+        consumerProperties.put(org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
+                getPropertiesAutoCommitIntervalMs());
+        consumerProperties.put(org.apache.kafka.clients.consumer.ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
+                getMaxMessagesPerRequest());
 
-//        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-//                getPropertiesKeyDeserializer());
-//        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-//                getPropertiesValueDeserializer());
-//        configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-//                getAutoOffsetReset());
-//        configs.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
-//                getPropertiesAutoCommitIntervalMs());
+        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                embeddedKafka.getBrokersAsString());
+        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                CustomKafkaAvroSerializer.class);
+        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                CustomKafkaAvroSerializer.class);
+        producerProperties.put(ProducerConfig.ACKS_CONFIG,
+                getProducerPropertiesAcks());
 
-        employeeKeyEmployeeConsumer = new DefaultKafkaConsumerFactory<EmployeeKey, Employee>(consumerProperties)
+        employeeKeyEmployeeConsumer = new DefaultKafkaConsumerFactory<>(consumerProperties)
                 .createConsumer(getGroupId(), getClientId());
 
-        kafkaProperties.buildConsumerProperties();
-
         employeeKeyEmployeeConsumer.subscribe(Lists.newArrayList(getTopicName()));
+
+        employeeKeyEmployeeProducer = new KafkaProducer<>(producerProperties);
 
     }
 
@@ -134,11 +149,6 @@ public abstract class AKafkaBaseTest {
         //Create avro message with defined schema
         GenericRecordBuilder avroMessage = new GenericRecordBuilder(mainSchema);
 
-        // creating partition key for kafka topic
-        EmployeeKey employeeKey = new EmployeeKey();
-        employeeKey.setId(1);
-        employeeKey.setDepartmentName("IT");
-
         //Populate avro message
         avroMessage
                 .set("id", "1")
@@ -146,6 +156,23 @@ public abstract class AKafkaBaseTest {
                 .set("lastName", "Who")
                 .set("department", "Tardis")
                 .set("designation", "The Doctor");
+
+        return avroMessage.build();
+    }
+
+    public static GenericRecord createEmployeeKeyAvroPayload() throws IOException {
+
+        //Create schema from .avsc file
+        Schema mainSchema = new Schema.Parser()
+                .parse(new ClassPathResource("employee-key-schema.avsc").getInputStream());
+
+        //Create avro message with defined schema
+        GenericRecordBuilder avroMessage = new GenericRecordBuilder(mainSchema);
+
+        //Populate avro message
+        avroMessage
+                .set("id", "1")
+                .set("departmentName", "IT");
 
         return avroMessage.build();
     }
@@ -174,11 +201,14 @@ public abstract class AKafkaBaseTest {
 
         final Schema schema = ReflectData.get().getSchema(object.getClass());
 
-        Assert.isTrue(schema.getFields().equals(record.getSchema().getFields()), "Schema fields didn’t match");
+        Assert.isTrue(schema.getFields().equals(record.getSchema().getFields()), "Schema fields don’t match");
 
-        record.getSchema().getFields().forEach(d -> PropertyAccessorFactory
-                .forDirectFieldAccess(object).setPropertyValue(d.name(),
-                        record.get(d.name()) == null ? record.get(d.name()) : record.get(d.name()).toString()));
+        record.getSchema().getFields()
+                .forEach(d -> PropertyAccessorFactory
+                        .forDirectFieldAccess(object)
+                        .setPropertyValue(d.name(),
+                                record.get(d.name()) == null ? record.get(d.name()) : record.get(d.name()).toString()));
+
         return object;
     }
 }

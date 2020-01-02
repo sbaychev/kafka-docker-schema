@@ -51,9 +51,6 @@ public class ConsumerConfig {
     @Value("${spring.kafka.messages-per-request}")
     private int maxMessagesPerRequest;
 
-//      spring.kafka.input.content-type=application/*+avro
-//      spring.kafka.input.concurrency=3
-
     @Bean
     public Map<String, Object> avroConfigsConsumerFactory() {
 
