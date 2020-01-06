@@ -27,10 +27,6 @@
       <id>confluent</id>
       <url>http://packages.confluent.io/maven/</url>
     </repository>
-    <repository>
-      <id>confluent</id>
-      <url>https://packages.confluent.io/maven/</url>
-    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -41,6 +37,8 @@
   </pluginRepositories>
 
   <dependencies>
+
+    <!--    Spring-->
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -60,6 +58,8 @@
       <artifactId>spring-kafka</artifactId>
       <version>${spring-kafka.version}</version>
     </dependency>
+
+    <!-- End Spring-->
 
     <dependency>
       <groupId>org.apache.kafka</groupId>
@@ -112,12 +112,7 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
-      <version>4.0.1</version>
-      <scope>test</scope>
-    </dependency>
+    <!--    For Integration tests To Be -->
 
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -137,6 +132,8 @@
       <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <!--    End Integration Tests To Be -->
 
     <dependency>
       <groupId>io.confluent</groupId>

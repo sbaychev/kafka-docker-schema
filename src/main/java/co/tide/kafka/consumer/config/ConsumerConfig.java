@@ -1,5 +1,6 @@
 package co.tide.kafka.consumer.config;
 
+import co.tide.kafka.consumer.ConsumerService;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -26,6 +28,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Setter
 @Configuration
 @Profile("!test")
+@EnableKafka
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "spring.kafka.consumer")
 public class ConsumerConfig {
