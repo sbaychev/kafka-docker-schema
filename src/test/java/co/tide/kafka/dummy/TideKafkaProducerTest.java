@@ -1,6 +1,7 @@
 package co.tide.kafka.dummy;
 
 import co.tide.kafka.config.IntegrationTestConfig;
+import co.tide.kafka.config.UnitTestConfig;
 import co.tide.kafka.producer.ProducerService;
 import co.tide.kafka.schema.Employee;
 import co.tide.kafka.schema.EmployeeKey;
@@ -37,26 +38,23 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         classes = {
                 KafkaAutoConfiguration.class,//FIXME: do not need it, find out why spring throws exceptions without
-                IntegrationTestConfig.class
+                UnitTestConfig.class
         }
 )
 @EmbeddedKafka(
         partitions = 1,
-        topics = SpringKafkaSenderTest.TEST_PRODUCER_TOPIC)
+        topics = TideKafkaProducerTest.TEST_PRODUCER_TOPIC)
 @DirtiesContext
-public class SpringKafkaSenderTest {
+public class TideKafkaProducerTest {
 
-    static final String TEST_PRODUCER_TOPIC = "event.t";
+    static final String TEST_PRODUCER_TOPIC = "producer.t";
 
     private ProducerService producerService;
 
@@ -66,7 +64,6 @@ public class SpringKafkaSenderTest {
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
-
 
     @BeforeEach
     public void setUp() {
@@ -123,7 +120,7 @@ public class SpringKafkaSenderTest {
 
         KafkaTemplate kafkaTemplate = new KafkaTemplate(
                 new DefaultKafkaProducerFactory<>(producerProperties));
-
+        
         producerService = new ProducerService(kafkaTemplate, TEST_PRODUCER_TOPIC);
     }
 

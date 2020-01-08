@@ -34,7 +34,8 @@ public class ConsumerServiceSecondInstance implements ConsumerSeekAware {
             clientIdPrefix = "tide.co-avro-0",
             id = "111",
             groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory"
+            containerFactory = "kafkaListenerContainerFactory",
+            errorHandler = "myExceptionHandler"
     )
     public void listenAsEmployee111(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,

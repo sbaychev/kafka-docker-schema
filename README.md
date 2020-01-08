@@ -19,13 +19,12 @@ curl -d "message=Doctor" http://localhost:8077/publish/
 - Java 8 or above (see installation instructions below)
 - Docker
 - Docker Compose
-- JUnit 4
+- JUnit 5
 
 **TODO:**
-1. Move to Gradle
-2. Move to JUnit 5
-3. Move to java 11
-4. Move to CustomErrorHandling
+1. Move to Gradle - WIP
+2. Move to Java 11
+3. Move to CustomErrorHandling - WIP
 
 **FIXME:** 
 1. The confluent schema registry expects the 8081 always to be used for it; need to modify it's server properties for other value

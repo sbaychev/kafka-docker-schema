@@ -43,7 +43,8 @@ public class ConsumerService implements ConsumerSeekAware {
             clientIdPrefix = "tide.co-avro-0",
             id = "0",
             groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory"
+            containerFactory = "kafkaListenerContainerFactory",
+            errorHandler = "myExceptionHandler"
     )
     public void listenAsEmployee(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
@@ -82,7 +83,9 @@ public class ConsumerService implements ConsumerSeekAware {
             clientIdPrefix = "tide.co-avro-1",
             id = "1",
             groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "kafkaListenerContainerFactory",
+            errorHandler = "myExceptionHandler"
+    )
     public void listenAsEmployee1(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
             //(required = false) if using compacted topics ergo tombstone record
@@ -107,7 +110,9 @@ public class ConsumerService implements ConsumerSeekAware {
             clientIdPrefix = "tide.co-avro-2",
             id = "2",
             groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "kafkaListenerContainerFactory",
+            errorHandler = "myExceptionHandler"
+    )
     public void listenAsEmployee2(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
             //(required = false) if using compacted topics ergo tombstone record
@@ -132,7 +137,9 @@ public class ConsumerService implements ConsumerSeekAware {
             clientIdPrefix = "tide.co-avro-3",
             id = "3",
             groupId = "${spring.kafka.consumer.group-id}",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "kafkaListenerContainerFactory",
+            errorHandler = "myExceptionHandler"
+    )
     public void listenAsEmployee3(
             ConsumerRecord<EmployeeKey, Employee> employeeConsumerRecord,
             //(required = false) if using compacted topics ergo tombstone record

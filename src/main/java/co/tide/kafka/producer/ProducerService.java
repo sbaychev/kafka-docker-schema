@@ -41,7 +41,7 @@ public class ProducerService {
         this.topicName = topicName;
     }
 
-    //    the producer picks partition implicitly or explicitly
+//    the producer picks partition implicitly or explicitly
 //    | we can define via the key or via the partition kafka template send | else Round Robin
     @Async
     public void send(final String message) {
