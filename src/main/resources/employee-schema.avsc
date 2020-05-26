@@ -1,7 +1,7 @@
 {
 	"type": "record",
 	"name": "Employee",
-	"namespace": "co.tide.kafka.schema",
+	"namespace": "co.sample.kafka.schema",
 	"fields": [
 	{
 		"name": "id",

@@ -1,5 +1,5 @@
 FROM openjdk:11-slim
-MAINTAINER Tide <dev-java@tide.co>
+MAINTAINER Stefan <sbaychev@gmail.com>
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
